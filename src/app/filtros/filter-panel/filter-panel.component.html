@@ -1,0 +1,12 @@
+<div class="filter-panel d-flex flex-column">
+  <label>Seleccionar Fecha:</label>
+  <input type="date" class="btn btn-outline-primary" (change)="applyFilter('fecha', $event)" />
+
+  <label>Categoría:</label>
+  <select (change)="applyFilter('categoria', $event)" class="btn btn-outline-primary mb-2">
+    <option value="ventas">Ventas</option>
+    <option value="clientes">Clientes</option>
+  </select>
+
+  <button (click)="clearFilters()"  class="btn btn-outline-danger">Borrar Filtros</button>
+</div>

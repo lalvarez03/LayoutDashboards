@@ -1,0 +1,39 @@
+<div class="chart-container d-flex flex-column"
+    [ngClass]="isDarkMode? 'text-white' : 'text-dark'">
+    <ng-container [ngSwitch]="chartType">
+        <div class="d-flex align-items-center position-relative h-100"
+        *ngSwitchCase="isGauge() ? chartType : ''"
+        [ngClass]="{'flex-row-reverse': chartType == 'gauge360'}">
+          <div>{{porcentaje}}%</div>
+          <div class="position-relative h-100">
+            <ngx-charts-gauge
+              [view]="dimensiones"
+              [results]="data"
+              [scheme]="colorScheme"
+              [min]="gaugeMin"
+              [max]="gaugeMax"
+              [units]="gaugeUnits"
+              (select)="onSelect($event)"
+              [angleSpan]="gaugeAngleSpan"
+              [startAngle]="gaugeStartAngle"
+              [showAxis]="gaugeShowAxis"
+              [showText]="gaugeShowText"
+              [valueFormatting]="formatLabel"
+            ></ngx-charts-gauge>
+            <h2 *ngIf="!gaugeShowText" [ngClass]="bigGauge ? 'textGaugeBig' : 'textGauge'" [ngStyle]="{'font-size': getTextSize()}">
+              {{formatLabel(data[0].value)}} <span>{{gaugeUnits}}</span>
+            </h2>
+          </div>
+          
+        </div>
+  
+      <ngx-charts-number-card *ngSwitchCase="'number-card'"
+        [textColor]="isDarkMode? 'white' : 'black'"
+        [view]="dimensiones"
+        [scheme]="colorScheme"
+        [results]="data"
+        (select)="onSelect($event)"
+      >
+      </ngx-charts-number-card>
+    </ng-container>
+  </div>
