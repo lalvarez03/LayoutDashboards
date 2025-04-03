@@ -9,14 +9,13 @@ import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
   imports: [CommonModule],
 })
 export class GaugeLinearComponent implements OnInit {
-  @Input() value: number = 0;
+  @Input() value!: number;
   @Input() title: string = "";
   @Input() min: number = 0;
   @Input() max?: number;
   @Input() target?: number;
   @Input() isDarkMode: boolean = false;
-
-  unidades: string = "USD";
+  @Input() gaugeUnits: any;
   progress: number = 0;
   targetPosition: number = 0;
 

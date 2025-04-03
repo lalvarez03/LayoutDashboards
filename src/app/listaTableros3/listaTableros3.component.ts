@@ -7,7 +7,7 @@ import { CommonModule } from "@angular/common"
 import { FormsModule } from '@angular/forms';
 import "gridstack/dist/gridstack.min.css"
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPlaceholder, CdkDropList, CdkDropListGroup, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop"
-import { HighchartsDinamicoComponent } from "../highcharts-dinamico/highcharts-dinamico.component";
+import { NgxChartsDinamicoComponent } from "../ngxcharts-dinamico/ngxcharts-dinamico.component";
 import { GaugeChartComponent } from "../gauge-chart/gauge-chart.component";
 import { GaugeLinearComponent } from "../gauge-linear/gauge-linear.component";
 import { FiltersService } from "../filtros/filters.service";
@@ -30,7 +30,12 @@ interface ChartItem {
   column: number
   disabled?: boolean
 
-  data: {data:any[], units:string}
+  data: {
+    data:any[],
+    units:string[],
+    yLabel:string,
+    xLabel:string
+  }
 }
 
 @Component({
@@ -45,14 +50,15 @@ interface ChartItem {
     CdkDrag,
     CdkDragPlaceholder,
     FormsModule,
-    HighchartsDinamicoComponent,
+    NgxChartsDinamicoComponent,
     GaugeChartComponent,
     GaugeLinearComponent,
-    FilterPanelComponent
+    FilterPanelComponent,
+    
   ]
 })
 export class ListaTableros3Component implements OnInit {
-  editar:boolean = false;
+  editar:boolean = true;
   mover:boolean = false;
   modoOscuro:boolean = false;
   barraIzquierda = false;
@@ -77,7 +83,9 @@ export class ListaTableros3Component implements OnInit {
         name: '2024',
         data: [2, 2, 3, 2]
     }],
-      units: 'Eficiencia'
+      units: ['enero', 'febrero', 'marzo', 'abril'],
+      xLabel: 'Meses',
+      yLabel: "4"
   }
     }   
   ]
@@ -96,6 +104,23 @@ export class ListaTableros3Component implements OnInit {
     });
     this.chartsService.getCharts().subscribe((data: any) => {
       for (let item of data) {
+        var d;
+        if(item.chartType === 'bar' || item.chartType === 'line', item.chartType === 'column', item.chartType === 'pie'){
+          d = {
+            data: item.data.data,
+            units: item.data.units,
+            yLabel: item.data.yLabel,
+            xLabel: item.data.xLabel,
+          }
+        }
+        else{
+          d = {
+            data: item.data.data,
+            units: item.data.units,
+            yLabel: "",
+            xLabel: "",
+          }
+        }
         this.tableros.push(
           {
             id: item.id,
@@ -106,11 +131,8 @@ export class ListaTableros3Component implements OnInit {
             setings: false,
             chartType: item.chartType,
             row: 2,
-            column: 2,
-            data: {
-              data: item.data.data,
-              units: item.data.units
-            }
+            column: 4,
+            data: d
           }
         )
       }

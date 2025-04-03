@@ -16,6 +16,7 @@ export class GaugeChartComponent implements OnInit {
   @Input() isDarkMode = false
   @Input() height!: number;
   @Input() width!: number;
+  @Input() gaugeUnits: any;
 
   dimensiones: [number, number] = [this.width, this.height]
   legendPosition: LegendPosition = LegendPosition.Below
@@ -34,7 +35,6 @@ export class GaugeChartComponent implements OnInit {
   porcentaje:number = 0
   gaugeMin = 0
   gaugeMax = 0
-  gaugeUnits = "USD"
   gaugeAngleSpan = 180
   gaugeStartAngle = -90
   legend = false
@@ -71,9 +71,16 @@ export class GaugeChartComponent implements OnInit {
       this.gaugeAngleSpan = 360
       this.gaugeStartAngle = 0
     }
+    if(this.isGauge()){
+      this.setGauge()
+    }
+  }
+
+  setGauge(){
     this.gaugeMax = this.chartData[2][1]
     this.porcentaje = Math.floor(this.chartData[0][1] / this.chartData[2][1] * 100)
   }
+
   ngOnChanges(changes: SimpleChanges) {
     if (
       changes["currentChartType"] ||

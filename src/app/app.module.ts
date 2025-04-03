@@ -3,6 +3,7 @@ import 'hammerjs';
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { ListaTableros3Component } from './listaTableros3/listaTableros3.component';
   @NgModule({
@@ -14,6 +15,6 @@ import { ListaTableros3Component } from './listaTableros3/listaTableros3.compone
     ],
     exports: [
     ],
-    providers: [provideHttpClient()]
+    providers: [provideHttpClient(), provideAnimations()]
   })
   export class AppModule { }

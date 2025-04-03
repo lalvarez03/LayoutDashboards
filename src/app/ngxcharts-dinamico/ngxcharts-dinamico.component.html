@@ -1,0 +1,49 @@
+<div class="chart-container d-flex flex-column"
+    [ngClass]="isDarkMode? 'text-white' : 'text-dark'">
+    <ng-container [ngSwitch]="chartType">
+        <div class="d-flex align-items-center position-relative h-100 w-100"
+        *ngSwitchCase="'bar'">
+          <div class="position-relative h-100 w-100">
+            <ngx-charts-bar-horizontal-2d
+              [view]="dimensiones"
+              [results]="data"
+              [scheme]="colorScheme"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [legend]="showLegend"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [barPadding]="barPadding"
+              [groupPadding]="groupPadding"
+              (select)="onSelect($event)"
+              (activate)="onActivate($event)"
+              (deactivate)="onDeactivate($event)"
+            ></ngx-charts-bar-horizontal-2d>
+          </div>
+        </div>
+        <div class="d-flex align-items-center position-relative h-100 w-100"
+        *ngSwitchCase="'line'">
+          <div class="position-relative h-100 w-100">
+            <ngx-charts-line-chart
+              [view]="dimensiones"
+              [results]="data"
+              [scheme]="colorScheme"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [legend]="showLegend"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              (select)="onSelect($event)"
+              (activate)="onActivate($event)"
+              (deactivate)="onDeactivate($event)"
+            ></ngx-charts-line-chart>
+          </div>
+        </div>
+    </ng-container>
+  </div>

@@ -87,6 +87,7 @@
                 *ngIf="['gauge180', 'gauge360', 'number-card'].includes(item.chartType)"
                 [chartData]="item.data.data"
                 [chartType]="item.chartType"
+                [gaugeUnits]="item.data.units"
                 [title] = "item.title"
                 [isDarkMode]="modoOscuro"
                 [width]="item.column*150"
@@ -98,19 +99,22 @@
                 [value]="item.data.data[0][1]"
                 [title]="item.title"
                 [target]="item.data.data[1][1]"
-                [max]="item.data.data[2][1]">
+                [max]="item.data.data[2][1]"
+                [gaugeUnits]="item.data.units">
               </app-gauge-linear>
-              <app-highcharts-dinamico
+              <app-ngxcharts-dinamico
                 [ngStyle]="{'background-color': modoOscuro? '#000' : '#fff'}"
                 *ngIf="['bar', 'line', 'column', 'pie'].includes(item.chartType)"
                 [title]="item.title"
                 [chartType]="item.chartType"
                 [chartData]="item.data.data"
+                [xLabel]="item.data.xLabel"
+                [yLabel]="item.data.yLabel"
                 [units]="item.data.units"
                 [isDarkMode]="modoOscuro"
-                [width]="item.column*150"
+                [width]="item.column*200"
                 [height]="item.row*160*0.6">
-              </app-highcharts-dinamico>
+              </app-ngxcharts-dinamico>
             </div>
             <div *cdkDragPlaceholder></div>
             <p class="mt-auto mb-0" [class.d-none]="item.setings&&editar">{{item.title}}</p>
@@ -159,7 +163,7 @@
                   <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width5_'+i" [value]="5" [(ngModel)]="item.column">
                   <label class="btn btn-outline-success p-0" [for]="'width5_'+i">5</label>
                   <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width6_'+i" [value]="6" [(ngModel)]="item.column">
-                  <label class="btn btn-outline-success p-0" [for]="'width6_'+i">7</label>
+                  <label class="btn btn-outline-success p-0" [for]="'width6_'+i">6</label>
                 </div>
               </div>
             </div>
