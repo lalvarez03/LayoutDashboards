@@ -61,31 +61,7 @@ export class ListaTableros3Component implements OnInit {
   barraIzquierda = false;
 
   idsBoveda: number[] = []
-  boveda: ChartItem[] = [
-    
-    {
-      id: 10,
-      indicator:"Eficiencia",
-      system:"Gestion de Transporte",
-      title: "Reporte de Flota",
-      description: "Descripcion",
-      setings: false,
-      chartType: 'line',
-      row: 1,
-      column: 1,
-      data: {data:[{
-        name: '2023',
-        data: [5, 3, 4, 7]
-    }, {
-        name: '2024',
-        data: [2, 2, 3, 2]
-    }],
-      units: ['enero', 'febrero', 'marzo', 'abril'],
-      xLabel: 'Meses',
-      yLabel: "4"
-  }
-    }
-  ]
+  boveda: ChartItem[] = []
   idsTableros: number[] = []
   tableros: ChartItem[] = []
 
@@ -98,6 +74,7 @@ export class ListaTableros3Component implements OnInit {
     this.filtersService.filters$.subscribe(filters => {
       this.applyFilters(filters);
     });
+    //Get Dashboard Charts
     await this.chartsService.getCharts().subscribe((ids: any) => {
       this.idsTableros = ids
       this.chartsService.getChartsByIds(this.idsTableros).subscribe((data: any) => {
@@ -138,10 +115,29 @@ export class ListaTableros3Component implements OnInit {
         })
       });
     })
+    //Get vault charts
     this.chartsService.getVaultCharts().subscribe((charts: any) => {
-      this.boveda = charts
+      this.chartsService.getConfigByIds(this.idsTableros).subscribe((config: any) => {
+        for (let [i, item] of charts.entries()){
+          this.idsBoveda.push(item.id)
+          this.boveda.push(
+            {
+              id: item.id,
+              indicator: item.indicator,
+              system: item.system,
+              title: item.title,
+              description: item.description,
+              setings: false,
+              chartType: item.chartType,
+              row: config[i].row,
+              column: config[i].column,
+              data: item.data
+            }
+          )
+        }
+        
+      })
     })
-    
   }
 
   applyFilters(filters: { [key: string]: any }) {
@@ -178,7 +174,7 @@ export class ListaTableros3Component implements OnInit {
 
       const sourceId = isFromTableros ? this.idsTableros : this.idsBoveda
       const targetId = isToTableros ? this.idsTableros : this.idsBoveda
-
+      
       const [itemId] = sourceId.splice(sourceIndex, 1)
       targetId.splice(event.currentIndex, 0, itemId)
     } 
@@ -200,9 +196,8 @@ export class ListaTableros3Component implements OnInit {
         arrayIds[toIndex] = id1
       }
     }
-    this.chartsService.postChartsIds(this.idsTableros).subscribe((response)=>{
-      console.log(this.idsTableros)
-      console.log(response)
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response) => {
+      console.log(this.tableros)
     })
   }
 
@@ -237,13 +232,16 @@ export class ListaTableros3Component implements OnInit {
     const elemento = this.tableros[index]
     if (index !== -1) {
       this.boveda.push(elemento)
+      this.idsBoveda.push(id)
       this.tableros.splice(index, 1)
+      this.idsTableros.splice(index, 1)
     }
   }
 
   agregarBoveda(event: CdkDragDrop<any>){
     const item = event.item.data;
     this.eliminarElemento(item.id)
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response) => {})
   }
 
   agregarATablero(event: CdkDragDrop<any>){
@@ -252,8 +250,11 @@ export class ListaTableros3Component implements OnInit {
     const elemento = this.boveda[index]
     if (index !== -1) {
       this.tableros.push(elemento)
+      this.idsTableros.push(item.id)
       this.boveda.splice(index, 1)
+      this.idsBoveda.splice(index, 1)
     }
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response) => {})
   }
 
   cambiarEstado() {
