@@ -13,8 +13,6 @@ import { GaugeLinearComponent } from "../gauge-linear/gauge-linear.component";
 import { FiltersService } from "../filtros/filters.service";
 import { FilterPanelComponent } from "../filtros/filter-panel/filter-panel.component";
 import { ChartsService } from "../charts/charts.service";
-import { provideHttpClient } from "@angular/common/http";
-import { AppModule } from "../app.module";
 
 
 interface ChartItem {
@@ -28,7 +26,6 @@ interface ChartItem {
   setings: boolean
   row: number
   column: number
-  disabled?: boolean
 
   data: {
     data:any[],
@@ -63,7 +60,7 @@ export class ListaTableros3Component implements OnInit {
   modoOscuro:boolean = false;
   barraIzquierda = false;
 
-
+  idsBoveda: number[] = []
   boveda: ChartItem[] = [
     
     {
@@ -87,56 +84,64 @@ export class ListaTableros3Component implements OnInit {
       xLabel: 'Meses',
       yLabel: "4"
   }
-    }   
+    }
   ]
-  tableros: ChartItem[] = [
-    
-  ]
+  idsTableros: number[] = []
+  tableros: ChartItem[] = []
 
   constructor(
     private filtersService: FiltersService,
     private chartsService: ChartsService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.filtersService.filters$.subscribe(filters => {
       this.applyFilters(filters);
     });
-    this.chartsService.getCharts().subscribe((data: any) => {
-      for (let item of data) {
-        var d;
-        if(item.chartType === 'bar' || item.chartType === 'line', item.chartType === 'column', item.chartType === 'pie'){
-          d = {
-            data: item.data.data,
-            units: item.data.units,
-            yLabel: item.data.yLabel,
-            xLabel: item.data.xLabel,
+    await this.chartsService.getCharts().subscribe((ids: any) => {
+      this.idsTableros = ids
+      this.chartsService.getChartsByIds(this.idsTableros).subscribe((data: any) => {
+        this.chartsService.getConfigByIds(this.idsTableros).subscribe((config: any) => {
+          for (let [i, item] of data.entries()) {
+            var d;
+            if(item.chartType === 'bar' || item.chartType === 'line', item.chartType === 'column', item.chartType === 'pie'){
+              d = {
+                data: item.data.data,
+                units: item.data.units,
+                yLabel: item.data.yLabel,
+                xLabel: item.data.xLabel,
+              }
+            }
+            else{
+              d = {
+                data: item.data.data,
+                units: item.data.units,
+                yLabel: "",
+                xLabel: "",
+              }
+            }
+            this.tableros.push(
+              {
+                id: item.id,
+                indicator: item.indicator,
+                system: item.system,
+                title: item.title,
+                description: item.description,
+                setings: false,
+                chartType: item.chartType,
+                row: config[i].row,
+                column: config[i].column,
+                data: d
+              }
+            )
           }
-        }
-        else{
-          d = {
-            data: item.data.data,
-            units: item.data.units,
-            yLabel: "",
-            xLabel: "",
-          }
-        }
-        this.tableros.push(
-          {
-            id: item.id,
-            indicator: item.indicator,
-            system: item.system,
-            title: item.title,
-            description: item.description,
-            setings: false,
-            chartType: item.chartType,
-            row: 2,
-            column: 4,
-            data: d
-          }
-        )
-      }
+        })
       });
+    })
+    this.chartsService.getVaultCharts().subscribe((charts: any) => {
+      this.boveda = charts
+    })
+    
   }
 
   applyFilters(filters: { [key: string]: any }) {
@@ -167,13 +172,19 @@ export class ListaTableros3Component implements OnInit {
       const sourceArray = isFromTableros ? this.tableros : this.boveda
       const targetArray = isToTableros ? this.tableros : this.boveda
       const sourceIndex = isFromTableros ? fromTablerosIndex : fromBovedaIndex
-      const targetIndex = isToTableros ? toTablerosIndex : toBovedaIndex
 
       const [item] = sourceArray.splice(sourceIndex, 1)
       targetArray.splice(event.currentIndex, 0, item)
+
+      const sourceId = isFromTableros ? this.idsTableros : this.idsBoveda
+      const targetId = isToTableros ? this.idsTableros : this.idsBoveda
+
+      const [itemId] = sourceId.splice(sourceIndex, 1)
+      targetId.splice(event.currentIndex, 0, itemId)
     } 
     else {
       const array = isFromTableros ? this.tableros : this.boveda
+      const arrayIds = isFromTableros ? this.idsTableros : this.idsBoveda
       const fromIndex = isFromTableros ? fromTablerosIndex : fromBovedaIndex
       const toIndex = isFromTableros ? toTablerosIndex : toBovedaIndex
 
@@ -182,8 +193,17 @@ export class ListaTableros3Component implements OnInit {
         const elem2 = array[toIndex]
         array[fromIndex] = elem2
         array[toIndex] = elem1
+        
+        const id1 = arrayIds[fromIndex]
+        const id2 = arrayIds[toIndex]
+        arrayIds[fromIndex] = id2
+        arrayIds[toIndex] = id1
       }
     }
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response)=>{
+      console.log(this.idsTableros)
+      console.log(response)
+    })
   }
 
   cambiarEstadoConfiguracion(id: number){
@@ -191,18 +211,17 @@ export class ListaTableros3Component implements OnInit {
     this.tableros[index].setings = !this.tableros[index].setings
   }
 
-  cambiarAltura(id: number, altura: number) {
+  
+  cambiarDimensiones(id: number) {
     const index = this.searchIndexTableros(id)
-    if (index !== -1) {
-      this.tableros[index].row = altura
+    const config = {
+      id: id,
+      row: this.tableros[index].row,
+      column: this.tableros[index].column
     }
-  }
-
-  cambiarAncho(id: number, ancho: number) {
-    const index = this.searchIndexTableros(id)
-    if (index !== -1) {
-      this.tableros[index].column = ancho
-    }
+    this.chartsService.postConfig(config).subscribe((response) => {
+      console.log(response)
+    })
   }
 
   onChartTypeChange(event: any, id:number) {

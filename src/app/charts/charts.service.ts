@@ -15,4 +15,23 @@ export class ChartsService {
     return this.http.get(this.apiUrl + '/charts-data')
   }
 
+  getVaultCharts() {
+    return this.http.get(this.apiUrl + '/charts-data/vault')
+  }
+  getChartsByIds(ids: number[]){
+    return this.http.post(this.apiUrl + '/charts-data/ids-data', ids )
+  }
+
+  postChartsIds (ids: number[]){
+    return this.http.post(this.apiUrl + '/charts-data/ids', ids )
+  }
+
+  getConfigByIds(ids: number[]){
+    return this.http.post(this.apiUrl + '/charts-config/ids', ids )
+  }
+
+  postConfig(config: any){
+    console.log(config)
+    return this.http.post(this.apiUrl + '/charts-configs', config)
+  }
 }
