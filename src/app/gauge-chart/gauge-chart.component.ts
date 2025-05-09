@@ -1,6 +1,7 @@
 import { Component, type OnInit, HostListener, Input, SimpleChanges } from "@angular/core"
 import { NgxChartsModule, LegendPosition } from "@swimlane/ngx-charts"
 import { CommonModule } from "@angular/common"
+import { colorSchemeChartsLight, colorSchemeChartsDark } from "../environment"
 
 
 @Component({
@@ -21,9 +22,7 @@ export class GaugeChartComponent implements OnInit {
   dimensiones: [number, number] = [this.width, this.height]
   legendPosition: LegendPosition = LegendPosition.Below
 
-  colorScheme: any = {
-    domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"],
-  }
+  colorScheme:any = colorSchemeChartsLight
 
   customColors = [
     { name: 'value', value: '#ff5722' }, // Color del valor numérico
@@ -97,9 +96,7 @@ export class GaugeChartComponent implements OnInit {
   }
 
   updateChart() {
-    this.colorScheme = {
-      domain: this.isDarkMode ? ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#C9CBCF", "#6D8B74", "#E57373", "#81C784"] : ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"],
-    }
+    this.colorScheme = this.isDarkMode ? colorSchemeChartsDark : colorSchemeChartsLight
     this.dimensiones = [this.width, this.height]
     this.formatLabel = (value: number) => {
       return value.toFixed(0)

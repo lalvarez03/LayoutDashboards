@@ -4,7 +4,9 @@
   <div class="p-2">
     <h5 class="position-relative fs-6 my-1" [style.left.%]="targetPosition">{{target}}</h5>
     <div class="progress-container rounded-2" (click)="onSelect($event)">
-      <div class="progress-bar" [style.width.%]="progress" [ngClass]="{'high': value >= target!, 'low': value < target!}"></div>
+      <div class="progress-bar rounded-2"
+      [style.width.%]="progress"
+      [ngClass]="{'high': value >= target!, 'low': value < target!}"></div>
       <div class="target-line" [style.left.%]="targetPosition"></div>
     </div>
     <div class="d-flex justify-content-between">

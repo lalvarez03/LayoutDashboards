@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { colorSchemeCharts } from '../environment';
+import { colorSchemeChartsDark, colorSchemeChartsLight } from '../environment';
 
 @Component({
   selector: 'app-ngxcharts-dinamico',
@@ -22,7 +22,12 @@ export class NgxChartsDinamicoComponent implements OnInit {
   @Input() width!: number;
 
 
-  colorScheme:any = colorSchemeCharts
+
+  activeEntry: any = null;
+  tooltipX: number = 0;
+  tooltipY: number = 0;
+
+  colorScheme:any = colorSchemeChartsLight
   dimensiones!: [number, number];
   data:any;
   barPadding: number = 8;
@@ -97,6 +102,7 @@ export class NgxChartsDinamicoComponent implements OnInit {
         this.showLegend = true
       }
       this.dimensiones = [this.width, this.height]
+      this.colorScheme = this.isDarkMode ? colorSchemeChartsDark : colorSchemeChartsLight
     }
   }
   
