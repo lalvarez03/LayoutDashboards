@@ -1,0 +1,101 @@
+ .box {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 160px;
+    gap: 5px;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .lista {
+    overflow: block;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container-grande{
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .container1 {
+    background-color: #332f2f;
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .chart-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .caja {
+    padding: 1%;
+    border: rgba(0, 0, 0, 0.2) solid 1px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    p{
+      font-size: smaller;
+      
+    }
+    .title{
+      font-weight: bold;
+    }
+  }
+
+  .grafico {
+    width: 100%;
+    height: 60% !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cursor-move{
+    cursor: move;
+  }
+  
+  .setings-btn {
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+  }
+
+  .trash-btn {
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+
+  .container-setings {
+    width: 50%;
+  }
+
+  .cdk-drag-preview {
+    background-color: rgb(255, 255, 255);
+    border-radius: 4px;
+    border: #000 solid 2px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    opacity: 0.5;
+    overflow: hidden;
+  }
+
+  .lista.cdk-drop-list-dragging {
+    opacity: 0.5;
+    border: 2px solid #000;
+  }
+
+  .table {
+    display: block;
+    height: 100%;
+    border: 2px solid rgba(0, 0, 0);
+    margin: 0;
+  }

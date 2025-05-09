@@ -1,0 +1,16 @@
+<div class="table-wrapper position-absolute">
+  <table *ngIf="tableData" class="table">
+    <thead>
+      <tr>
+        <th *ngFor="let column of tableData.data" [ngStyle]="{'font-size': (getTextSize()*1.1)+'px'}">{{ column.name }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let rowIndex of rowIndexes">
+        <td *ngFor="let column of tableData.data">
+          <span [ngStyle]="{'font-size': getTextSize()+'px'}">{{ column.data[rowIndex] || '—' }}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

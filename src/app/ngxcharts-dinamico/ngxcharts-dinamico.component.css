@@ -17,3 +17,7 @@ highcharts-chart {
     width: 100%;
     height: 100%
 }
+
+.white-axis ::ng-deep .ngx-charts text {
+    fill: white;
+  }

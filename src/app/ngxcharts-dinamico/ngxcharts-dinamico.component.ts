@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { colorSchemeCharts } from '../environment';
 
 @Component({
   selector: 'app-ngxcharts-dinamico',
@@ -21,9 +22,7 @@ export class NgxChartsDinamicoComponent implements OnInit {
   @Input() width!: number;
 
 
-  colorScheme: any = {
-    domain: ["#5AA454", "#E44D25", "#CFC0BB", "#7aa3e5", "#a8385d", "#aae3f5"],
-  }
+  colorScheme:any = colorSchemeCharts
   dimensiones!: [number, number];
   data:any;
   barPadding: number = 8;
@@ -41,27 +40,41 @@ export class NgxChartsDinamicoComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.chartData)
     this.yAxisLabel = this.yLabel;
     this.xAxisLabel = this.xLabel;
     this.dimensiones = [this.width, this.height]
     this.data = this.buildData()
+    console.log(this.width, this.height)
   }
 
   buildData(){
     var res:any[] = []
     for (let i = 0; i < this.chartData.length; i++) {
       var values = []
-      for (let j = 0; j < this.chartData[i].value.length; j++){
-        values.push({
-          name: this.units[j],
-          value: this.chartData[i].value[j]
-      })
+      if(this.chartType != "stackedBars"){
+        for (let j = 0; j < this.chartData[i].value.length; j++){
+          values.push({
+            name: this.units[j],
+            value: this.chartData[i].value[j]
+          })
+        }
       }
+      else{
+        for (let j = 0; j < this.chartData[i].series.length; j++){
+          values.push({
+            name: this.chartData[i].series[j].name,
+            value: this.chartData[i].series[j].value
+          })
+        }
+      }
+      
       res.push({
         name: this.chartData[i].name,
         series:values
       })
     }
+    console.log(res)
     return res
   }
 

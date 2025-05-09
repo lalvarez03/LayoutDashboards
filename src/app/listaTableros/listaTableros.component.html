@@ -1,0 +1,197 @@
+<div cdkDropListGroup class="container-grande w-100 d-flex" [ngClass]="{'dark-mode': modoOscuro}">
+
+  <!-- Boveda de Tableros -->
+  <div class="dropend barraIzquierda p-0">
+    <button class="btn btn-secondary dropdown-toggle h-100 rounded-0 w-100 p-0"
+      type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+    </button>
+
+    <ul class="dropdown-menu w-100 p-3">
+      <li class="dropdown-header text-center fs-5">Ajustes</li>
+
+      <!-- Botones de ajustes -->
+      <li class="d-flex justify-content-center align-items-center py-2">
+        <div class="d-flex gap-2 border rounded-2 p-1">
+          <div (click)="editarTamanio()" class="py-1 px-2 rounded-2 cursor-pointer"
+            [class.bg-success]="editar">
+            <i class="bi bi-pencil-fill fs-6" [class.text-white]="editar"></i>
+          </div>
+          <div (click)="bloqMovimiento()" class="py-1 px-2 rounded-2 cursor-pointer"
+            [class.bg-success]="!mover">
+            <i class="bi bi-arrows-move fs-6" [class.text-white]="!mover"></i>
+          </div>
+          <div (click)="cambiarModoOscuro()" class="py-1 px-2 rounded-2 cursor-pointer"
+            [class.bg-success]="modoOscuro">
+            <i class="bi fs-6"
+              [class.bi-brightness-high-fill]="!modoOscuro"
+              [class.bi-moon-fill]="modoOscuro">
+            </i>
+          </div>
+        </div>
+      </li>
+
+      <li class="dropdown-header text-center fs-5">Filtros</li>
+
+      <!-- Bóveda -->
+      <li class="dropdown-header text-center fs-5">Bóveda</li>
+      <li class="px-2">
+        <div *ngFor="let item of boveda; let i = index"
+          cdkDropList
+          [cdkDropListData]="item.id"
+          (cdkDropListDropped)="drop($event)"
+          class="lista cursor-move shadow-sm my-2 p-2 rounded border">
+          <div cdkDrag [cdkDragData]="item">
+            {{item.title}}
+          </div>
+        </div>
+
+        <div *ngIf="boveda.length === 0"
+          cdkDropList
+          (cdkDropListDropped)="agregarBoveda($event)"
+          class="lista px-1 py-3 rounded border text-center">
+          <p class="fs-6"><i class="bi bi-arrow-bar-down"></i><br>Arrastre para Agregar</p>
+        </div>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+    </ul>
+  </div>
+
+  <!-- Tablero Principal -->
+  <div  class="container1"
+    [ngStyle]="{'background-color': modoOscuro? '#332f2f' : '#cac4c4'}">
+    <div class="box py-1" #gridBox
+      [ngClass]="tableros.length === 0 ? 'd-none' : ''">
+      <div *ngFor="let item of tableros; let i = index"
+          cdkDropList 
+          [cdkDropListData]="item.id"
+          (cdkDropListDropped)="drop($event)"
+          class="lista shadow rounded-2 position-relative h-100"
+          [ngSwitch]="item.chartType"
+          [ngStyle]="{'grid-row': 'span ' + item.row, 'grid-column': 'span ' + item.column, cursor: mover ? 'default': 'move'}">
+          <div
+          class="caja d-flex flex-column justify-content-start position-relative rounded-2"
+          [ngStyle]="{ 'color' : modoOscuro ?  '#fff' : '#000','background-color': modoOscuro? '#333' : '#fff'}"
+
+          cdkDrag
+          [cdkDragDisabled]="mover"
+          [cdkDragData]="item">
+            <div [class.d-none]="item.setings"></div>
+            <div class="d-flex justify-content-between" [class.d-none]="item.setings&&editar">
+              <p class="m-0">{{item.indicator}}</p>
+              <p class="m-0">[{{item.system}}]</p>
+            </div>
+            <p class="title m-0" [class.d-none]="item.setings&&editar">{{item.title}}</p>
+
+            <!-- Graficos -->
+            <div 
+              class="grafico mt-auto"
+              [class.d-none]="item.setings&&editar">
+
+              <!-- Tabla -->
+              <app-table 
+                class="table"
+                *ngIf="item.chartType === 'table'"
+                [width]="item.column*(gridWith/12)*0.95"
+                [height]="item.row*160"
+                [tableData]="item.data">
+              </app-table>
+
+              <!-- Gauges -->
+              <app-gauge-chart
+                [ngStyle]="{'background-color': modoOscuro? '#333' : '#fff'}"
+                *ngIf="['gauge180', 'gauge360', 'number-card'].includes(item.chartType)"
+                [chartData]="item.data.data"
+                [chartType]="item.chartType"
+                [gaugeUnits]="item.data.units"
+                [title] = "item.title"
+                [isDarkMode]="modoOscuro"
+                [width]="item.column*(gridWith/12)*0.95"
+                [height]="item.row*160*0.6">
+              </app-gauge-chart>
+              <app-gauge-linear 
+                *ngIf="item.chartType === 'linear-gauge'"
+                [isDarkMode]="modoOscuro"
+                [value]="item.data.data[0][1]"
+                [title]="item.title"
+                [target]="item.data.data[1][1]"
+                [max]="item.data.data[2][1]"
+                [gaugeUnits]="item.data.units">
+              </app-gauge-linear>
+
+              <!-- Graficos Dinamicos -->
+              <app-ngxcharts-dinamico
+                [ngStyle]="{'background-color': modoOscuro? '#000' : '#fff'}"
+                *ngIf="['bar', 'line', 'column', 'pie', 'stackedBars'].includes(item.chartType)"
+                [title]="item.title"
+                [chartType]="item.chartType"
+                [chartData]="item.data.data"
+                [xLabel]="item.data.xLabel"
+                [yLabel]="item.data.yLabel"
+                [units]="item.data.units"
+                [isDarkMode]="modoOscuro"
+                [width]="item.column*(gridWith/6)*0.95"
+                [height]="item.row*160*0.55">
+              </app-ngxcharts-dinamico>
+            </div>
+            <div *cdkDragPlaceholder></div>
+            <p class="mt-auto mb-0" [class.d-none]="item.setings&&editar">{{item.title}}</p>
+            
+            <!-- Container Configuraciones -->        
+            <div class="setings d-flex justify-content-center align-items-center flex-column h-100 w-100 rounded-2" 
+            [class.d-none]="!item.setings||!editar"
+            [ngStyle]="{'background-color': modoOscuro? '#000' : '#fff'}">
+              <div class="container-setings d-flex flex-column justify-content-center">
+                <div class="d-flex justify-content-center mt-2" [ngStyle]="{ 'color' : modoOscuro ?  '#fff' : '#000'}">
+                  <h4 class="fs-6 m-0">Height</h4> <i class="bi bi-arrows-vertical fw-bold"></i>
+                </div>
+                
+                <div class="btn-group btn-group-sm" role="group" aria-label="Height selection">
+                  <input type="radio" class="btn-check" name="height-{{i}}" [id]="'height1_'+i" [value]="1" [(ngModel)]="item.row" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'height1_'+i">1</label>
+                  <input type="radio" class="btn-check" name="height-{{i}}" [id]="'height2_'+i" [value]="2" [(ngModel)]="item.row" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'height2_'+i">2</label>
+                  <input type="radio" class="btn-check" name="height-{{i}}" [id]="'height3_'+i" [value]="3" [(ngModel)]="item.row" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'height3_'+i">3</label>
+                  <input type="radio" class="btn-check" name="height-{{i}}" [id]="'height4_'+i" [value]="4" [(ngModel)]="item.row" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'height4_'+i">4</label>
+                </div>
+                <div class="d-flex justify-content-center mt-2" [ngStyle]="{ 'color' : modoOscuro ?  '#fff' : '#000'}">
+                  <h4 class="fs-6 m-0">Width</h4> <i class="bi bi-arrows fw-bold"></i>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Width selection">
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width1_'+i" [value]="1" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width1_'+i">1</label>
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width2_'+i" [value]="2" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width2_'+i">2</label>
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width3_'+i" [value]="3" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width3_'+i">3</label>
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width4_'+i" [value]="4" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width4_'+i">4</label>
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width5_'+i" [value]="5" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width5_'+i">5</label>
+                  <input type="radio" class="btn-check" name="width-{{i}}" [id]="'width6_'+i" [value]="6" [(ngModel)]="item.column" (change)="cambiarDimensiones(item.id)">
+                  <label class="btn btn-outline-success p-0" [for]="'width6_'+i">6</label>
+                </div>
+              </div>
+            </div>
+            <div class="setings-btn btn btn-outline position-absolute" (click)="cambiarEstadoConfiguracion(item.id)" [ngStyle]="{'color': modoOscuro? '#fff' : '#000'}" [class.d-none]="!editar">
+              <i class="bi bi-gear"></i>
+            </div>
+            <div class="trash-btn btn btn-outline position-absolute" (click)="eliminarElemento(item.id)" [class.d-none]="!item.setings||!editar">
+              <i class="bi bi-trash text-danger"></i>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+    <div 
+      *ngIf="tableros.length === 0"
+      cdkDropList
+      (cdkDropListDropped)="agregarATablero($event)"
+      class="lista rounded border h-100 text-white align-items-center">
+        <div class="h-100 d-flex justify-content-center align-items-center">
+          <p class="fs-5 text-center"><i class="bi bi-arrow-bar-down"></i> <br> Arrastre para Agregar</p>
+        </div>
+      </div>
+  </div>
+</div>
