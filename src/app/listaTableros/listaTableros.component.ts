@@ -250,11 +250,12 @@ export class ListaTablerosComponent implements OnInit {
 
   dropDespues(event: CdkDragDrop<any>, id: number): void {
     const indexPreviousItem = this.searchIndexTableros(event.previousContainer.data);
+    const indexToItem = this.searchIndexTableros(id);
     const fromData = event.previousContainer.data;
     const fromIndexInBoveda = this.searchIndexBoveda(fromData);
     const isFromBoveda = fromIndexInBoveda !== -1;
   
-    if(fromData < this.tableros.length-1){
+    if(indexToItem <= this.tableros.length){
       this.dropLugar(event, fromIndexInBoveda, id, isFromBoveda, true)
     }
     else{
@@ -271,7 +272,7 @@ export class ListaTablerosComponent implements OnInit {
           const [item] = this.tableros.splice(indexPreviousItem, 1);
           this.tableros.push(item);
   
-          const [itemId] = this.idsTableros.splice(event.previousIndex, 1);
+          const [itemId] = this.idsTableros.splice(indexPreviousItem, 1);
           this.idsTableros.push(itemId);
         }
       }

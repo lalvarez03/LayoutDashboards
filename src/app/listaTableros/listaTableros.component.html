@@ -41,6 +41,7 @@
           (cdkDropListDropped)="drop($event)"
           class="lista cursor-move shadow-sm my-2 p-2 rounded border">
           <div cdkDrag [cdkDragData]="item">
+            <div class="placeholder" *cdkDragPlaceholder></div>
             {{item.title}}
           </div>
         </div>
@@ -179,7 +180,7 @@
               <div class="trash-btn btn btn-outline position-absolute" (click)="eliminarElemento(item.id)" [class.d-none]="!item.setings||!editar">
                 <i class="bi bi-trash text-danger"></i>
               </div>
-              <div class="placeholder" *cdkDragPlaceholder></div>
+              <div class="placeholder d-flex flex-column justify-content-center align-items-center" *cdkDragPlaceholder></div>
             </div>
         </div>
         <div  
@@ -188,6 +189,7 @@
           [id]="'drop-list-before-' + item.id"
           class="drop-zone-before"
           (cdkDropListDropped)="dropAntes($event, item.id)">
+          <div class="placeholder" *cdkDragPlaceholder></div>
         </div>
         <div  
           cdkDropList 
