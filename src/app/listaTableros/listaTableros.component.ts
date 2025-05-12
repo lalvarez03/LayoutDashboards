@@ -211,6 +211,78 @@ export class ListaTablerosComponent implements OnInit {
     })
   }
 
+  dropLugar(event: CdkDragDrop<any>, fromIndexInBoveda:number, idPrevio:number, isFromBoveda:boolean, despues:boolean = false){
+    const indexPreviousItem = this.searchIndexTableros(event.previousContainer.data);
+    if (isFromBoveda) {
+      const [item] = this.boveda.splice(fromIndexInBoveda, 1);
+      let toIndex = this.searchIndexTableros(idPrevio)
+      this.tableros.splice(toIndex, 0, item);
+  
+      const [itemId] = this.idsBoveda.splice(fromIndexInBoveda, 1);
+      this.idsTableros.splice(toIndex, 0, itemId);
+  
+    } 
+    else {
+      if (event.previousContainer.data !== idPrevio) {
+        const [item] = this.tableros.splice(indexPreviousItem, 1);
+        let toIndex = this.searchIndexTableros(idPrevio)
+        if(despues){
+          toIndex = toIndex + 1
+        }
+        this.tableros.splice(toIndex, 0, item);
+
+        const [itemId] = this.idsTableros.splice(event.previousIndex, 1);
+        this.idsTableros.splice(toIndex, 0, itemId);
+      }
+    }
+  }
+
+  dropAntes(event: CdkDragDrop<any>, id: number): void {
+    const fromData = event.previousContainer.data;
+    const fromIndexInBoveda = this.searchIndexBoveda(fromData);
+    const isFromBoveda = fromIndexInBoveda !== -1;
+    this.dropLugar(event, fromIndexInBoveda, id, isFromBoveda)
+    // Guardar nuevo orden
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response) => {
+      console.log('IDs actualizados', this.idsTableros);
+    });
+  }
+
+  dropDespues(event: CdkDragDrop<any>, id: number): void {
+    const indexPreviousItem = this.searchIndexTableros(event.previousContainer.data);
+    const fromData = event.previousContainer.data;
+    const fromIndexInBoveda = this.searchIndexBoveda(fromData);
+    const isFromBoveda = fromIndexInBoveda !== -1;
+  
+    if(fromData < this.tableros.length-1){
+      this.dropLugar(event, fromIndexInBoveda, id, isFromBoveda, true)
+    }
+    else{
+      if (isFromBoveda) {
+        const [item] = this.boveda.splice(fromIndexInBoveda, 1);
+        this.tableros.push(item);
+    
+        const [itemId] = this.idsBoveda.splice(fromIndexInBoveda, 1);
+        this.idsTableros.push(itemId);
+    
+      } 
+      else {
+        if (event.previousContainer.data !== id) {
+          const [item] = this.tableros.splice(indexPreviousItem, 1);
+          this.tableros.push(item);
+  
+          const [itemId] = this.idsTableros.splice(event.previousIndex, 1);
+          this.idsTableros.push(itemId);
+        }
+      }
+    }
+    // Guardar nuevo orden
+    this.chartsService.postChartsIds(this.idsTableros).subscribe((response) => {
+      console.log('IDs actualizados', this.idsTableros);
+    });
+  }
+  
+
   cambiarEstadoConfiguracion(id: number){
     const index = this.searchIndexTableros(id)
     this.tableros[index].setings = !this.tableros[index].setings
